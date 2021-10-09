@@ -1,9 +1,11 @@
 package com.picpay.desafio.android.data.di
 
+import androidx.room.Room
 import com.picpay.desafio.android.data.network.PicPayService
 import com.picpay.desafio.android.feature.main.repository.MainRepositoryImpl
 import com.picpay.desafio.android.feature.main.ui.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
+import com.picpay.desafio.android.model.UserDataBase
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -34,10 +36,12 @@ val dataModule = module {
             .build()
     }
 
+    single {
+        Room.databaseBuilder(get(), UserDataBase::class.java, "picpay_database").build()
+    }
+
     factory {
-        MainRepositoryImpl(
-            service = get()
-        )
+        MainRepositoryImpl(service = get(), dataBase = get())
     }
 
     viewModel {

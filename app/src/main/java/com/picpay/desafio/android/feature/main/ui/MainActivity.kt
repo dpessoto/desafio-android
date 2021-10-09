@@ -2,17 +2,16 @@ package com.picpay.desafio.android.feature.main.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.picpay.desafio.android.R
 import com.picpay.desafio.android.databinding.ActivityMainBinding
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
 import com.picpay.desafio.android.model.StateView
 import com.picpay.desafio.android.model.User
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.net.UnknownHostException
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,25 +19,39 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModel()
     private lateinit var binding: ActivityMainBinding
     private val adapter: UserListAdapter by inject()
+    private var users = ArrayList<User>()
 
-    private val observer = Observer<StateView<ArrayList<User>>> { stateView ->
+    private val observer = Observer<StateView<List<User>>> { stateView ->
         when (stateView) {
             is StateView.Loading -> {
+                binding.scroll.visibility = View.VISIBLE
                 binding.progressBar.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.clError.visibility = View.GONE
             }
             is StateView.DataLoaded -> {
                 binding.progressBar.visibility = View.GONE
 
-                adapter.users = stateView.data
+                users = ArrayList(stateView.data)
+                adapter.users = users
             }
             is StateView.Error -> {
-                val message = getString(R.string.error)
-
+                binding.scroll.visibility = View.GONE
                 binding.progressBar.visibility = View.GONE
                 binding.recyclerView.visibility = View.GONE
+                binding.clError.visibility = View.VISIBLE
+                stateError(stateView)
+            }
+        }
+    }
 
-                Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT)
-                    .show()
+    private fun stateError(stateView: StateView.Error) {
+        binding.txtMessage.text = when (stateView.e) {
+            is UnknownHostException -> {
+                "Verifique sua conexão, por favor"
+            }
+            else -> {
+                "Ocorreu um erro inesperado.\nPor favor, tente novamente."
             }
         }
     }
@@ -54,11 +67,16 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.stateView.observe(this, observer)
         viewModel.getUser()
+
+        binding.btnTryAgain.setOnClickListener {
+            viewModel.getUser()
+        }
     }
 
     override fun onResume() {
         super.onResume()
-
+        if (users.isNullOrEmpty())
+            viewModel.getUser()
     }
 
     override fun onDestroy() {
