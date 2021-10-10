@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">PicPay</string>
-    <string name="title">Contatos</string>
-    <string name="error">Ocorreu um erro. Tente novamente.</string>
-
+    <string name="title">Contacts</string>
+    <string name="verify_conection">Please check your connection!</string>
+    <string name="unexpected_error">An unexpected error has occurred. Please try again.</string>
+    <string name="locally_loaded_data">Data loaded locally, click here to update!</string>
+    <string name="update_list">List updated successfully!</string>
+    <string name="could_not_update_list">Unable to update list! check your connection, please.</string>
+    <string name="attention">Attention</string>
+    <string name="try_again">Try Again</string>
 </resources>

@@ -3,7 +3,7 @@ package com.picpay.desafio.android.data.di
 import androidx.room.Room
 import com.picpay.desafio.android.data.network.PicPayService
 import com.picpay.desafio.android.feature.main.repository.MainRepositoryImpl
-import com.picpay.desafio.android.feature.main.ui.UserListAdapter
+import com.picpay.desafio.android.feature.main.ui.adapter.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
 import com.picpay.desafio.android.model.UserDataBase
 import okhttp3.OkHttpClient
