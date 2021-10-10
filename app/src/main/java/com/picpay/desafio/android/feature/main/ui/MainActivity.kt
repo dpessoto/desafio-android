@@ -1,14 +1,21 @@
 package com.picpay.desafio.android.feature.main.ui
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.picpay.desafio.android.databinding.ActivityMainBinding
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
 import com.picpay.desafio.android.model.StateView
 import com.picpay.desafio.android.model.User
+import com.picpay.desafio.android.util.extension.gone
+import com.picpay.desafio.android.util.extension.invisible
+import com.picpay.desafio.android.util.extension.toUnderline
+import com.picpay.desafio.android.util.extension.visible
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.UnknownHostException
@@ -20,8 +27,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val adapter: UserListAdapter by inject()
     private var users = ArrayList<User>()
+    private val getUser = View.OnClickListener { viewModel.getUser() }
+    private var dataRemote = true
 
-    private val observer = Observer<StateView<List<User>>> { stateView ->
+    private val observer = Observer<StateView<Pair<List<User>, Boolean>>> { stateView ->
         when (stateView) {
             is StateView.Loading -> {
                 binding.scroll.visibility = View.VISIBLE
@@ -30,10 +39,37 @@ class MainActivity : AppCompatActivity() {
                 binding.clError.visibility = View.GONE
             }
             is StateView.DataLoaded -> {
-                binding.progressBar.visibility = View.GONE
+                binding.progressBar.gone()
 
-                users = ArrayList(stateView.data)
+                users = ArrayList(stateView.data.first)
                 adapter.users = users
+
+                if (stateView.data.second) {
+                    binding.txtInformation.invisible()
+                    if (!dataRemote) {
+                        val snack: Snackbar = Snackbar.make(binding.recyclerView, "Lista atualizada com sucesso!", Snackbar.LENGTH_SHORT)
+                        val view = snack.view
+                        val params = view.layoutParams as FrameLayout.LayoutParams
+                        params.gravity = Gravity.TOP
+                        view.layoutParams = params
+                        snack.show()
+                    }
+                    dataRemote = true
+                } else {
+                    if (dataRemote) {
+                        binding.txtInformation.visible()
+                        binding.txtInformation.text = "Dados carregados localmente, clique aqui para atualizar!"
+                        binding.txtInformation.toUnderline()
+                        dataRemote = false
+                    } else {
+                        val snack: Snackbar = Snackbar.make(binding.recyclerView, "Não foi possível atualizar a lista, verifique sua conexão", Snackbar.LENGTH_SHORT)
+                        val view = snack.view
+                        val params = view.layoutParams as FrameLayout.LayoutParams
+                        params.gravity = Gravity.TOP
+                        view.layoutParams = params
+                        snack.show()
+                    }
+                }
             }
             is StateView.Error -> {
                 binding.scroll.visibility = View.GONE
@@ -66,11 +102,9 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         viewModel.stateView.observe(this, observer)
-        viewModel.getUser()
 
-        binding.btnTryAgain.setOnClickListener {
-            viewModel.getUser()
-        }
+        binding.btnTryAgain.setOnClickListener(getUser)
+        binding.txtInformation.setOnClickListener(getUser)
     }
 
     override fun onResume() {

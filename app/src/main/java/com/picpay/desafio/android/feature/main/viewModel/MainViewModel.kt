@@ -11,8 +11,8 @@ import com.picpay.desafio.android.model.User
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val repository: MainRepositoryImpl) : ViewModel() {
-    private val _stateView = MutableLiveData<StateView<List<User>>>()
-    val stateView: LiveData<StateView<List<User>>>
+    private val _stateView = MutableLiveData<StateView<Pair<List<User>, Boolean>>>()
+    val stateView: LiveData<StateView<Pair<List<User>, Boolean>>>
         get() = _stateView
 
     fun getUser() {

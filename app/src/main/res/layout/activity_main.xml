@@ -41,14 +41,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/txtInformation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:textColor="@color/colorPrimaryLight"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Dados locais, clique aqui para atualizar a lista" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtInformation"
                     tools:listitem="@layout/list_item_user" />
 
                 <ProgressBar
@@ -63,7 +77,8 @@
                     app:layout_constraintEnd_toEndOf="@+id/recyclerView"
                     app:layout_constraintStart_toStartOf="@+id/recyclerView"
                     app:layout_constraintTop_toTopOf="@+id/recyclerView"
-                    app:layout_constraintVertical_bias="0.3" />
+                    app:layout_constraintVertical_bias="0.3"
+                    tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
