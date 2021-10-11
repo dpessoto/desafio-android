@@ -31,13 +31,13 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private val observer = Observer<StateView<Pair<List<User>, Boolean>>> { stateView ->
         when (stateView) {
             is StateView.Loading -> {
-                setVisibilityScrollAndError(scroll = View.VISIBLE, error = View.GONE)
+                setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
             }
             is StateView.DataLoaded -> {
                 stateDataLoaded(stateView.data.first, stateView.data.second)
             }
             is StateView.Error -> {
-                setVisibilityScrollAndError(scroll = View.GONE, error = View.VISIBLE)
+                setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
                 stateError(stateView.e)
             }
         }
@@ -50,10 +50,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         setContentView(view)
         setRecylerView()
-        setClicks()
-        binding.clMain.setTransitionBackgroundDrawble(R.drawable.transition_main_activity, 2000)
-
-        viewModel.stateView.observe(this, observer)
+        setEvents()
+        setObservers()
     }
 
     override fun onResume() {
@@ -64,14 +62,14 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.stateView.removeObserver(observer)
+        removeObservers()
     }
 
-    override fun setVisibilityScrollAndError(scroll: Int, error: Int) {
-        binding.scroll.visibility = scroll
-        binding.progressBar.visibility = scroll
-        binding.recyclerView.visibility = scroll
-        binding.clError.visibility = error
+    override fun setVisibilitySwipeAndError(swipeVisibility: Int, errorVisibility: Int) {
+        binding.apply {
+            swipe.visibility = swipeVisibility
+            clError.visibility = errorVisibility
+        }
     }
 
     override fun showSnackBarMessage(message: String) {
@@ -84,12 +82,16 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun stateError(e: Throwable) {
-        binding.includeError.txtMessage.text = when (e) {
-            is UnknownHostException -> {
-                getString(R.string.verify_conection)
-            }
-            else -> {
-                getString(R.string.unexpected_error)
+        binding.apply {
+            progressBar.gone()
+            swipe.isRefreshing = false
+            includeError.txtMessage.text = when (e) {
+                is UnknownHostException -> {
+                    getString(R.string.verify_conection)
+                }
+                else -> {
+                    getString(R.string.unexpected_error)
+                }
             }
         }
     }
@@ -102,41 +104,63 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         if (remote) {
             binding.txtInformation.invisible()
-            if (!dataRemote)
+            if (!dataRemote || binding.swipe.isRefreshing)
                 showSnackBarMessage(message = getString(R.string.update_list))
 
             dataRemote = true
         } else {
             if (dataRemote) {
-                binding.txtInformation.visible()
-                binding.txtInformation.text = getString(R.string.locally_loaded_data)
-                binding.txtInformation.toUnderline()
+                binding.apply {
+                    txtInformation.visible()
+                    txtInformation.text = getString(R.string.locally_loaded_data)
+                    txtInformation.toUnderline()
+                }
                 dataRemote = false
             } else {
                 showSnackBarMessage(message = getString(R.string.could_not_update_list))
             }
         }
+        binding.swipe.isRefreshing = false
     }
 
     override fun setRecylerView() {
-        binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.apply {
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+        }
     }
 
-    override fun setClicks() {
-        binding.includeError.btnTryAgain.setOnClickListener {
-            viewModel.getUser()
-            binding.includeError.btnTryAgain.gone()
-            binding.includeError.progressBar.visible()
+    override fun setEvents() {
+        binding.apply {
+            includeError.btnTryAgain.setOnClickListener {
+                viewModel.getUser()
+                includeError.btnTryAgain.gone()
+                includeError.progressBar.visible()
+                progressBar.visible()
 
-            Handler().postDelayed({
-                binding.includeError.btnTryAgain.visible()
-                binding.includeError.progressBar.gone()
-            }, 2000)
-        }
+                Handler().postDelayed({
+                    includeError.btnTryAgain.visible()
+                    includeError.progressBar.gone()
+                }, 2000)
+            }
 
-        binding.txtInformation.setOnClickListener {
-            viewModel.getUser()
+            txtInformation.setOnClickListener {
+                viewModel.getUser()
+            }
+
+            swipe.setOnRefreshListener {
+                viewModel.getUser()
+            }
+
+            clMain.setTransitionBackgroundDrawble(R.drawable.transition_main_activity, 2000)
         }
+    }
+
+    override fun setObservers() {
+        viewModel.stateView.observe(this, observer)
+    }
+
+    override fun removeObservers() {
+        viewModel.stateView.removeObserver(observer)
     }
 }
