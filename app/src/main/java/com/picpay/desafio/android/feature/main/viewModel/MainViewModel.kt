@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picpay.desafio.android.feature.main.repository.MainRepository
 import com.picpay.desafio.android.feature.main.repository.MainRepositoryImpl
 import com.picpay.desafio.android.model.ResultRepository
 import com.picpay.desafio.android.model.StateView
