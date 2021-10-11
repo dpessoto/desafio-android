@@ -99,9 +99,6 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     override fun stateDataLoaded(list: List<User>, remote: Boolean) {
         binding.progressBar.gone()
 
-        users = list
-        adapter.users = users
-
         if (remote) {
             binding.txtInformation.invisible()
             if (!dataRemote || binding.swipe.isRefreshing)
@@ -109,18 +106,21 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
             dataRemote = true
         } else {
-            if (dataRemote) {
+            if (dataRemote && users.isNullOrEmpty()) {
                 binding.apply {
                     txtInformation.visible()
-                    txtInformation.text = getString(R.string.locally_loaded_data)
-                    txtInformation.toUnderline()
+                    txtInformation.setTextToUnderline(getString(R.string.locally_loaded_data))
                 }
                 dataRemote = false
             } else {
                 showSnackBarMessage(message = getString(R.string.could_not_update_list))
             }
         }
+
         binding.swipe.isRefreshing = false
+
+        users = list
+        adapter.users = users
     }
 
     override fun setRecylerView() {
@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 viewModel.getUser()
             }
 
-            clMain.setTransitionBackgroundDrawble(R.drawable.transition_main_activity, 2000)
+            clMain.setTransitionBackgroundDrawable(R.drawable.transition_main_activity, 2000)
         }
     }
 

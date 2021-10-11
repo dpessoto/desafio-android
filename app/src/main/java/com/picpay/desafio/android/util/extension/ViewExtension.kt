@@ -16,7 +16,7 @@ fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
-fun View.setTransitionBackgroundDrawble(drawble: Int, durationMillis: Int) {
+fun View.setTransitionBackgroundDrawable(drawble: Int, durationMillis: Int) {
     val transitionDrawable = ContextCompat.getDrawable(this.context, drawble) as TransitionDrawable
     this.background = transitionDrawable
     transitionDrawable.startTransition(durationMillis)

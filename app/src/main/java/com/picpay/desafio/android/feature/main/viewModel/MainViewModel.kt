@@ -5,13 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picpay.desafio.android.feature.main.repository.MainRepository
-import com.picpay.desafio.android.feature.main.repository.MainRepositoryImpl
 import com.picpay.desafio.android.model.ResultRepository
 import com.picpay.desafio.android.model.StateView
 import com.picpay.desafio.android.model.User
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val repository: MainRepositoryImpl) : ViewModel() {
+class MainViewModel(private val repository: MainRepository) : ViewModel() {
     private val _stateView = MutableLiveData<StateView<Pair<List<User>, Boolean>>>()
     val stateView: LiveData<StateView<Pair<List<User>, Boolean>>>
         get() = _stateView

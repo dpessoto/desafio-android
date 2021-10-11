@@ -2,6 +2,7 @@ package com.picpay.desafio.android.data.di
 
 import androidx.room.Room
 import com.picpay.desafio.android.data.network.PicPayService
+import com.picpay.desafio.android.feature.main.repository.MainRepository
 import com.picpay.desafio.android.feature.main.repository.MainRepositoryImpl
 import com.picpay.desafio.android.feature.main.ui.adapter.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
@@ -41,7 +42,7 @@ val dataModule = module {
     }
 
     factory {
-        MainRepositoryImpl(service = get(), dataBase = get())
+        MainRepositoryImpl(service = get(), dataBase = get()) as MainRepository
     }
 
     viewModel {
