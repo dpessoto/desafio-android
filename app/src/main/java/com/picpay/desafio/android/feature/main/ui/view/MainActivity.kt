@@ -15,10 +15,7 @@ import com.picpay.desafio.android.feature.main.ui.adapter.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
 import com.picpay.desafio.android.model.StateView
 import com.picpay.desafio.android.model.User
-import com.picpay.desafio.android.util.extension.gone
-import com.picpay.desafio.android.util.extension.invisible
-import com.picpay.desafio.android.util.extension.toUnderline
-import com.picpay.desafio.android.util.extension.visible
+import com.picpay.desafio.android.util.extension.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.UnknownHostException
@@ -54,6 +51,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         setContentView(view)
         setRecylerView()
         setClicks()
+        binding.clMain.setTransitionBackgroundDrawble(R.drawable.transition_main_activity, 2000)
 
         viewModel.stateView.observe(this, observer)
     }
