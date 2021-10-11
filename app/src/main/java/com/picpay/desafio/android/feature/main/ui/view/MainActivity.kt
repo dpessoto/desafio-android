@@ -2,15 +2,12 @@ package com.picpay.desafio.android.feature.main.ui.view
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.picpay.desafio.android.R
 import com.picpay.desafio.android.databinding.ActivityMainBinding
+import com.picpay.desafio.android.feature.base.ui.view.BaseActivity
 import com.picpay.desafio.android.feature.main.ui.adapter.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
 import com.picpay.desafio.android.model.StateView
@@ -20,27 +17,34 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.UnknownHostException
 
-class MainActivity : AppCompatActivity(), MainActivityView {
+class MainActivity : BaseActivity(), MainActivityView {
 
     private val viewModel: MainViewModel by viewModel()
-    private val adapter: UserListAdapter by inject()
+    private val adapterUserList: UserListAdapter by inject()
+    private val manager: LinearLayoutManager by inject()
     private lateinit var binding: ActivityMainBinding
     private var users = listOf<User>()
     private var dataRemote = true
 
-    private val observer = Observer<StateView<Pair<List<User>, Boolean>>> { stateView ->
+    private val observerData = Observer<StateView<Pair<List<User>, Boolean>>> { stateView ->
         when (stateView) {
-            is StateView.Loading -> {
-                setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
-            }
             is StateView.DataLoaded -> {
+                setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
                 stateDataLoaded(stateView.data.first, stateView.data.second)
             }
             is StateView.Error -> {
                 setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
                 stateError(stateView.e)
             }
+            else -> {
+                setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
+                stateError(Exception())
+            }
         }
+    }
+
+    private val observerLoading = Observer<Boolean> { loading ->
+        if (loading) showLoading() else stopLoading()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,15 +53,17 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         val view = binding.root
 
         setContentView(view)
-        setRecylerView()
+        setRecyclerView()
         setEvents()
         setObservers()
     }
 
     override fun onResume() {
         super.onResume()
-        if (users.isNullOrEmpty())
+        if (users.isNullOrEmpty()) {
             viewModel.getUser()
+            setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.GONE)
+        }
     }
 
     override fun onDestroy() {
@@ -72,18 +78,8 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         }
     }
 
-    override fun showSnackBarMessage(message: String) {
-        val snack: Snackbar = Snackbar.make(binding.recyclerView, message, Snackbar.LENGTH_SHORT)
-        val view = snack.view
-        val params = view.layoutParams as FrameLayout.LayoutParams
-        params.gravity = Gravity.TOP
-        view.layoutParams = params
-        snack.show()
-    }
-
     override fun stateError(e: Throwable) {
         binding.apply {
-            progressBar.gone()
             swipe.isRefreshing = false
             includeError.txtMessage.text = when (e) {
                 is UnknownHostException -> {
@@ -97,12 +93,10 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun stateDataLoaded(list: List<User>, remote: Boolean) {
-        binding.progressBar.gone()
-
         if (remote) {
             binding.txtInformation.invisible()
             if (!dataRemote || binding.swipe.isRefreshing)
-                showSnackBarMessage(message = getString(R.string.update_list))
+                showSnackBarMessage(message = getString(R.string.update_list), viewContext = binding.root)
 
             dataRemote = true
         } else {
@@ -113,20 +107,20 @@ class MainActivity : AppCompatActivity(), MainActivityView {
                 }
                 dataRemote = false
             } else {
-                showSnackBarMessage(message = getString(R.string.could_not_update_list))
+                showSnackBarMessage(message = getString(R.string.could_not_update_list), viewContext = binding.root)
             }
         }
 
         binding.swipe.isRefreshing = false
 
         users = list
-        adapter.users = users
+        adapterUserList.users = users
     }
 
-    override fun setRecylerView() {
-        binding.apply {
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+    override fun setRecyclerView() {
+        binding.recyclerView.apply {
+            adapter = adapterUserList
+            layoutManager = manager
         }
     }
 
@@ -134,9 +128,9 @@ class MainActivity : AppCompatActivity(), MainActivityView {
         binding.apply {
             includeError.btnTryAgain.setOnClickListener {
                 viewModel.getUser()
+                setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.GONE)
                 includeError.btnTryAgain.gone()
                 includeError.progressBar.visible()
-                progressBar.visible()
 
                 Handler().postDelayed({
                     includeError.btnTryAgain.visible()
@@ -145,7 +139,10 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             }
 
             txtInformation.setOnClickListener {
-                viewModel.getUser()
+                if (!swipe.isRefreshing) {
+                    viewModel.getUser()
+                    swipe.isRefreshing = true
+                }
             }
 
             swipe.setOnRefreshListener {
@@ -153,14 +150,17 @@ class MainActivity : AppCompatActivity(), MainActivityView {
             }
 
             clMain.setTransitionBackgroundDrawable(R.drawable.transition_main_activity, 2000)
+            swipe.setProgressBackgroundColorSchemeResource(R.color.colorAccent)
         }
     }
 
     override fun setObservers() {
-        viewModel.stateView.observe(this, observer)
+        viewModel.stateView.observe(this, observerData)
+        viewModel.showLoading.observe(this, observerLoading)
     }
 
     override fun removeObservers() {
-        viewModel.stateView.removeObserver(observer)
+        viewModel.stateView.removeObserver(observerData)
+        viewModel.showLoading.removeObserver(observerLoading)
     }
 }

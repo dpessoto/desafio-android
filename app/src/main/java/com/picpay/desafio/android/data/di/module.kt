@@ -1,5 +1,6 @@
 package com.picpay.desafio.android.data.di
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
 import com.picpay.desafio.android.data.network.PicPayService
 import com.picpay.desafio.android.feature.main.repository.MainRepository
@@ -53,4 +54,5 @@ val dataModule = module {
 
 val uiModule = module {
     factory { UserListAdapter() }
+    factory { LinearLayoutManager(get()) }
 }
