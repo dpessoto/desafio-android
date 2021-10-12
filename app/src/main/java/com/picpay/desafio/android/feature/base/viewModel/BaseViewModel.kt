@@ -8,4 +8,8 @@ open class BaseViewModel : ViewModel() {
     protected val _showLoading = MutableLiveData<Boolean>()
     val showLoading: LiveData<Boolean>
     get() = _showLoading
+
+    protected val _error = MutableLiveData<Exception>()
+    val error: LiveData<Exception>
+        get() = _error
 }

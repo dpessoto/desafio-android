@@ -10,7 +10,6 @@ import com.picpay.desafio.android.databinding.ActivityMainBinding
 import com.picpay.desafio.android.feature.base.ui.view.BaseActivity
 import com.picpay.desafio.android.feature.main.ui.adapter.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
-import com.picpay.desafio.android.model.StateView
 import com.picpay.desafio.android.model.User
 import com.picpay.desafio.android.util.extension.*
 import org.koin.android.ext.android.inject
@@ -26,21 +25,14 @@ class MainActivity : BaseActivity(), MainActivityView {
     private var users = listOf<User>()
     private var dataRemote = true
 
-    private val observerData = Observer<StateView<Pair<List<User>, Boolean>>> { stateView ->
-        when (stateView) {
-            is StateView.DataLoaded -> {
-                setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
-                stateDataLoaded(stateView.data.first, stateView.data.second)
-            }
-            is StateView.Error -> {
-                setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
-                stateError(stateView.e)
-            }
-            else -> {
-                setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
-                stateError(Exception())
-            }
-        }
+    private val observerDataLoaded = Observer<Pair<List<User>, Boolean>> { dataLoaded ->
+        setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
+        stateDataLoaded(dataLoaded.first, dataLoaded.second)
+    }
+
+    private val observerError = Observer<Exception> { error ->
+        setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
+        stateError(error)
     }
 
     private val observerLoading = Observer<Boolean> { loading ->
@@ -155,12 +147,14 @@ class MainActivity : BaseActivity(), MainActivityView {
     }
 
     override fun setObservers() {
-        viewModel.stateView.observe(this, observerData)
+        viewModel.listUser.observe(this, observerDataLoaded)
+        viewModel.error.observe(this, observerError)
         viewModel.showLoading.observe(this, observerLoading)
     }
 
     override fun removeObservers() {
-        viewModel.stateView.removeObserver(observerData)
+        viewModel.listUser.removeObserver(observerDataLoaded)
+        viewModel.error.removeObserver(observerError)
         viewModel.showLoading.removeObserver(observerLoading)
     }
 }

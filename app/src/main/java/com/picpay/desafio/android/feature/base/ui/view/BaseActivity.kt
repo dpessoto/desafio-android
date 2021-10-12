@@ -2,17 +2,17 @@ package com.picpay.desafio.android.feature.base.ui.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.picpay.desafio.android.R
 import com.picpay.desafio.android.databinding.ActivityBaseBinding
+import com.picpay.desafio.android.util.extension.addView
 import com.picpay.desafio.android.util.extension.gone
+import com.picpay.desafio.android.util.extension.removeView
 import com.picpay.desafio.android.util.extension.visible
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
@@ -29,30 +29,22 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     override fun showLoading() {
-        try {
-            addView()
-            binding.imageView.startAnimation(animation)
-        } catch (e: Exception) {
-            Log.e("showLoading", e.message + "")
-        }
+        addView()
+        binding.imageView.startAnimation(animation)
     }
 
     override fun stopLoading() {
-        try {
-            removeView()
-            binding.imageView.clearAnimation()
-        } catch (e: Exception) {
-            Log.e("stopLoading", e.message + "")
-        }
+        removeView()
+        binding.imageView.clearAnimation()
     }
 
     private fun addView() {
-        (window.decorView as ViewGroup).addView(binding.clMain)
+        this.addView(binding.clMain)
         binding.imageView.visible()
     }
 
     private fun removeView() {
-        (window.decorView as ViewGroup).removeView(binding.clMain)
+        this.removeView(binding.clMain)
         binding.imageView.gone()
     }
 
@@ -68,21 +60,13 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun onResume() {
         super.onResume()
         goingToBackground = true
-        try {
-            removeView()
-        } catch (e: Exception) {
-            Log.e("onResume", e.message + "")
-        }
+        removeView()
     }
 
     override fun onPause() {
         super.onPause()
-        try {
-            if (goingToBackground)
-                addView()
-        } catch (e: Exception) {
-            Log.e("onPause", e.message + "")
-        }
+        if (goingToBackground)
+            addView()
     }
 
     override fun startActivity(intent: Intent) {
