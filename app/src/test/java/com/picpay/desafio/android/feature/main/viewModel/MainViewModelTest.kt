@@ -29,6 +29,7 @@ class MainViewModelTest {
     private val repository = mockk<MainRepository>()
     private val dataLoadedObserver = mockk<Observer<Pair<List<User>, Boolean>>>(relaxed = true)
     private val errorObserver = mockk<Observer<Exception>>(relaxed = true)
+    private val loadingObserver = mockk<Observer<Boolean>>(relaxed = true)
 
     private val dispatcher = TestCoroutineDispatcher()
 
@@ -74,11 +75,27 @@ class MainViewModelTest {
         verify { errorObserver.onChanged(error.exception) }
     }
 
+    @Test
+    fun loading() {
+        val viewModel = initViewModel()
+        val error = ResultRepository.Error(Exception())
+        val flow = flow {
+            emit(error)
+        }
+        coEvery { repository.getUser() } returns flow
+
+        viewModel.getUser()
+
+        coVerify { repository.getUser() }
+        verify { loadingObserver.onChanged(true) }
+    }
+
     private fun initViewModel(): MainViewModel {
         val viewModel = MainViewModel(repository)
 
         viewModel.listUser.observeForever(dataLoadedObserver)
         viewModel.error.observeForever(errorObserver)
+        viewModel.showLoading.observeForever(loadingObserver)
 
         return viewModel
     }
