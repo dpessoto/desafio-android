@@ -12,6 +12,7 @@ import com.picpay.desafio.android.feature.main.ui.adapter.UserListAdapter
 import com.picpay.desafio.android.feature.main.viewModel.MainViewModel
 import com.picpay.desafio.android.model.User
 import com.picpay.desafio.android.util.extension.*
+import com.picpay.desafio.android.util.view.component.EditTextSearch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.UnknownHostException
@@ -22,11 +23,15 @@ class MainActivity : BaseActivity(), MainActivityView {
     private val adapterUserList: UserListAdapter by inject()
     private val manager: LinearLayoutManager by inject()
     private lateinit var binding: ActivityMainBinding
-    private var users = listOf<User>()
+    private var users = ArrayList<User>()
 
-    private val observerDataLoaded = Observer<Pair<List<User>, Boolean>> { dataLoaded ->
+    private val observerDataLoaded = Observer<Pair<ArrayList<User>, Boolean>> { dataLoaded ->
         setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
         stateDataLoaded(dataLoaded.first, dataLoaded.second)
+    }
+
+    private val observerSearchContacts = Observer<ArrayList<User>> { list ->
+        stateSearchLoaded(list)
     }
 
     private val observerError = Observer<Exception> { error ->
@@ -41,9 +46,8 @@ class MainActivity : BaseActivity(), MainActivityView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
 
-        setContentView(view)
+        setContentView(binding.root)
         setRecyclerView()
         setEvents()
         setObservers()
@@ -82,11 +86,12 @@ class MainActivity : BaseActivity(), MainActivityView {
         }
     }
 
-    override fun stateDataLoaded(list: List<User>, remote: Boolean) {
+    override fun stateDataLoaded(list: ArrayList<User>, remote: Boolean) {
         if (remote) {
-            binding.txtInformation.invisible()
+            binding.txtInformation.gone()
             if (binding.swipe.isRefreshing)
                 showSnackBarMessage(message = getString(R.string.update_list))
+
         } else {
             if (users.isNullOrEmpty()) {
                 binding.apply {
@@ -95,11 +100,25 @@ class MainActivity : BaseActivity(), MainActivityView {
                 }
             } else {
                 showSnackBarMessage(message = getString(R.string.could_not_update_list))
+                return
             }
+        }
+
+        binding.apply {
+            editTextSearch.clearAndHideKeyboard(triggerTextChange = false)
+            binding.txtNotFound.gone()
+            progressBar.gone()
         }
 
         users = list
         adapterUserList.users = users
+    }
+
+    override fun stateSearchLoaded(list: ArrayList<User>) {
+        adapterUserList.users = list
+        binding.recyclerView.scrollToPosition(0)
+        Handler().postDelayed({ binding.progressBar.gone() }, 500)
+        binding.txtNotFound.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
     }
 
     override fun setRecyclerView() {
@@ -134,6 +153,13 @@ class MainActivity : BaseActivity(), MainActivityView {
                 viewModel.getUsers()
             }
 
+            editTextSearch.addTextChangedListener = object : EditTextSearch.AddTextChangedListener {
+                override fun textChanged(text: String) {
+                    progressBar.visible()
+                    viewModel.searchContacts(text)
+                }
+            }
+
             clMain.setTransitionBackgroundDrawable(R.drawable.transition_main_activity, 2000)
             swipe.setProgressBackgroundColorSchemeResource(R.color.colorAccent)
         }
@@ -141,12 +167,14 @@ class MainActivity : BaseActivity(), MainActivityView {
 
     override fun setObservers() {
         viewModel.listUser.observe(this, observerDataLoaded)
+        viewModel.listSearchUser.observe(this, observerSearchContacts)
         viewModel.error.observe(this, observerError)
         viewModel.showLoading.observe(this, observerLoading)
     }
 
     override fun removeObservers() {
         viewModel.listUser.removeObserver(observerDataLoaded)
+        viewModel.listSearchUser.removeObserver(observerSearchContacts)
         viewModel.error.removeObserver(observerError)
         viewModel.showLoading.removeObserver(observerLoading)
     }

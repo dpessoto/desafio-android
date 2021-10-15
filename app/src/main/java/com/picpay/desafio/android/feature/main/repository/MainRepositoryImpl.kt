@@ -15,7 +15,7 @@ class MainRepositoryImpl(private val service: PicPayService, private val dataBas
     constructor(service: PicPayService, dataBase: UserDataBase)
             : this(service, dataBase, dataBase.userDAO())
 
-    override suspend fun getUsers(): Flow<ResultRepository<Pair<List<User>, Boolean>>> {
+    override suspend fun getUsers(): Flow<ResultRepository<Pair<ArrayList<User>, Boolean>>> {
         return flow {
             try {
                 val users = service.getUsers()
@@ -27,7 +27,7 @@ class MainRepositoryImpl(private val service: PicPayService, private val dataBas
                 emit(ResultRepository.Success(Pair(users, true)))
             } catch (e: Exception) {
                 try {
-                    val users = userDAO.getAllUsers()
+                    val users = ArrayList(userDAO.getAllUsers())
                     if (!users.isNullOrEmpty())
                         emit(ResultRepository.Success(Pair(users, false)))
                     else

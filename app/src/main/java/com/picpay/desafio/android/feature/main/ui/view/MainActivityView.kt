@@ -5,7 +5,8 @@ import com.picpay.desafio.android.model.User
 interface MainActivityView {
     fun setVisibilitySwipeAndError(swipeVisibility: Int, errorVisibility: Int)
     fun stateError(e: Throwable)
-    fun stateDataLoaded(list: List<User>, remote: Boolean)
+    fun stateDataLoaded(list: ArrayList<User>, remote: Boolean)
+    fun stateSearchLoaded(list: ArrayList<User>)
     fun setRecyclerView()
     fun setEvents()
     fun setObservers()

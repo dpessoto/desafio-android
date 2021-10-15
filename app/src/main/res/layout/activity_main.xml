@@ -5,6 +5,7 @@
     android:id="@+id/clMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/colorPrimaryDark"
     tools:context=".feature.main.ui.view.MainActivity">
 
@@ -50,7 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="24dp"
                     android:textColor="@color/colorPrimaryLight"
                     android:visibility="gone"
@@ -63,15 +64,56 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtInformation"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextSearch"
                     app:layout_constraintVertical_bias="0.0"
                     tools:listitem="@layout/list_item_user"
+                    tools:visibility="visible" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="2dp"
+                    android:indeterminate="true"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/editTextSearch"
+                    app:layout_constraintStart_toStartOf="@+id/editTextSearch"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextSearch" />
+
+                <com.picpay.desafio.android.util.view.component.EditTextSearch
+                    android:id="@+id/editTextSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtInformation"
+                    tools:visibility="visible">
+
+                </com.picpay.desafio.android.util.view.component.EditTextSearch>
+
+                <TextView
+                    android:id="@+id/txtNotFound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/contact_not_found"
+                    android:textColor="@color/colorPrimaryLight"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editTextSearch"
                     tools:visibility="visible" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

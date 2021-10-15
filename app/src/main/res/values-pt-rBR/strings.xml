@@ -8,4 +8,6 @@
     <string name="could_not_update_list">Não foi possível atualizar a lista! verifique sua conexão, por favor.</string>
     <string name="attention">Atenção</string>
     <string name="try_again">Tente novamente</string>
+    <string name="cancel_edit">cancelar</string>
+    <string name="contact_not_found">Contato não encontrado :(</string>
 </resources>
