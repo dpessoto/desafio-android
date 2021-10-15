@@ -4,17 +4,18 @@ import androidx.room.withTransaction
 import com.picpay.desafio.android.data.network.PicPayService
 import com.picpay.desafio.android.model.ResultRepository
 import com.picpay.desafio.android.model.User
+import com.picpay.desafio.android.model.UserDAO
 import com.picpay.desafio.android.model.UserDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
-class MainRepositoryImpl(private val service: PicPayService, private val dataBase: UserDataBase) :
-    MainRepository {
-    private val userDAO = dataBase.userDAO()
+class MainRepositoryImpl(private val service: PicPayService, private val dataBase: UserDataBase, private val userDAO: UserDAO) : MainRepository {
+    constructor(service: PicPayService, dataBase: UserDataBase)
+            : this(service, dataBase, dataBase.userDAO())
 
-    override suspend fun getUser(): Flow<ResultRepository<Pair<List<User>, Boolean>>> {
+    override suspend fun getUsers(): Flow<ResultRepository<Pair<List<User>, Boolean>>> {
         return flow {
             try {
                 val users = service.getUsers()

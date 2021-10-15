@@ -52,7 +52,7 @@ class MainActivity : BaseActivity(), MainActivityView {
     override fun onResume() {
         super.onResume()
         if (users.isNullOrEmpty()) {
-            viewModel.getUser()
+            viewModel.getUsers()
             setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.GONE)
         }
     }
@@ -112,7 +112,7 @@ class MainActivity : BaseActivity(), MainActivityView {
     override fun setEvents() {
         binding.apply {
             includeError.btnTryAgain.setOnClickListener {
-                viewModel.getUser()
+                viewModel.getUsers()
                 setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.GONE)
                 includeError.btnTryAgain.gone()
                 includeError.progressBar.visible()
@@ -125,13 +125,13 @@ class MainActivity : BaseActivity(), MainActivityView {
 
             txtInformation.setOnClickListener {
                 if (!swipe.isRefreshing) {
-                    viewModel.getUser()
+                    viewModel.getUsers()
                     swipe.isRefreshing = true
                 }
             }
 
             swipe.setOnRefreshListener {
-                viewModel.getUser()
+                viewModel.getUsers()
             }
 
             clMain.setTransitionBackgroundDrawable(R.drawable.transition_main_activity, 2000)

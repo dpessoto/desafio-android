@@ -15,10 +15,10 @@ class MainViewModel(private val repository: MainRepository) : BaseViewModel() {
     val listUser: LiveData<Pair<List<User>, Boolean>>
         get() = _listUser
 
-    fun getUser() {
+    fun getUsers() {
         viewModelScope.launch {
             showLoading()
-            repository.getUser().collect {
+            repository.getUsers().collect {
                 when (it) {
                     is ResultRepository.Success -> dataLoaded(it.data)
                     is ResultRepository.Error -> error(it)

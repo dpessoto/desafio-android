@@ -52,11 +52,11 @@ class MainViewModelTest {
         val flow = flow {
             emit(success)
         }
-        coEvery { repository.getUser() } returns flow
+        coEvery { repository.getUsers() } returns flow
 
-        viewModel.getUser()
+        viewModel.getUsers()
 
-        coVerify { repository.getUser() }
+        coVerify { repository.getUsers() }
         verify { dataLoadedObserver.onChanged(success.data) }
     }
 
@@ -67,11 +67,11 @@ class MainViewModelTest {
         val flow = flow {
             emit(error)
         }
-        coEvery { repository.getUser() } returns flow
+        coEvery { repository.getUsers() } returns flow
 
-        viewModel.getUser()
+        viewModel.getUsers()
 
-        coVerify { repository.getUser() }
+        coVerify { repository.getUsers() }
         verify { errorObserver.onChanged(error.exception) }
     }
 
@@ -82,11 +82,11 @@ class MainViewModelTest {
         val flow = flow {
             emit(error)
         }
-        coEvery { repository.getUser() } returns flow
+        coEvery { repository.getUsers() } returns flow
 
-        viewModel.getUser()
+        viewModel.getUsers()
 
-        coVerify { repository.getUser() }
+        coVerify { repository.getUsers() }
         verify { loadingObserver.onChanged(true) }
     }
 
