@@ -1,18 +1,19 @@
 package com.picpay.desafio.android.feature.main.viewModel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
-import com.picpay.desafio.android.feature.main.repository.MainRepository
+import com.picpay.desafio.android.feature.main.MainMockListUser.listUser
+import com.picpay.desafio.android.feature.main.MainMockViewModel.dataLoadedObserver
+import com.picpay.desafio.android.feature.main.MainMockViewModel.dispatcher
+import com.picpay.desafio.android.feature.main.MainMockViewModel.errorObserver
+import com.picpay.desafio.android.feature.main.MainMockViewModel.loadingObserver
+import com.picpay.desafio.android.feature.main.MainMockViewModel.repository
 import com.picpay.desafio.android.model.ResultRepository
-import com.picpay.desafio.android.model.User
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -25,13 +26,6 @@ class MainViewModelTest {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
-
-    private val repository = mockk<MainRepository>()
-    private val dataLoadedObserver = mockk<Observer<Pair<List<User>, Boolean>>>(relaxed = true)
-    private val errorObserver = mockk<Observer<Exception>>(relaxed = true)
-    private val loadingObserver = mockk<Observer<Boolean>>(relaxed = true)
-
-    private val dispatcher = TestCoroutineDispatcher()
 
     @Before
     fun setup() {
@@ -46,8 +40,6 @@ class MainViewModelTest {
     @Test
     fun success() {
         val viewModel = initViewModel()
-        val listUser =
-            listOf(User(1, "daniel", "pessoto", "url"), User(1, "amanda", "pessoto", "url"))
         val success = ResultRepository.Success(Pair(listUser, true))
         val flow = flow {
             emit(success)
