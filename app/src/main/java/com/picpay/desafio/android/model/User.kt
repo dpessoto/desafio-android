@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "users")
 data class User(
-    val img: String,
-    val name: String,
     @PrimaryKey val id: Int,
-    val username: String
+    val name: String,
+    val username: String,
+    val img: String
 )

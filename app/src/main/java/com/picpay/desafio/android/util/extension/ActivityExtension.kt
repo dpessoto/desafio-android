@@ -7,7 +7,6 @@ import android.view.ViewGroup
 
 fun Activity.addView(view: View) {
     try {
-
         (window.decorView as ViewGroup).addView(view)
     } catch (e: Exception) {
         Log.e("addView", e.message + "")

@@ -23,7 +23,6 @@ class MainActivity : BaseActivity(), MainActivityView {
     private val manager: LinearLayoutManager by inject()
     private lateinit var binding: ActivityMainBinding
     private var users = listOf<User>()
-    private var dataRemote = true
 
     private val observerDataLoaded = Observer<Pair<List<User>, Boolean>> { dataLoaded ->
         setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
@@ -72,7 +71,6 @@ class MainActivity : BaseActivity(), MainActivityView {
 
     override fun stateError(e: Throwable) {
         binding.apply {
-            swipe.isRefreshing = false
             includeError.txtMessage.text = when (e) {
                 is UnknownHostException -> {
                     getString(R.string.verify_conection)
@@ -87,23 +85,18 @@ class MainActivity : BaseActivity(), MainActivityView {
     override fun stateDataLoaded(list: List<User>, remote: Boolean) {
         if (remote) {
             binding.txtInformation.invisible()
-            if (!dataRemote || binding.swipe.isRefreshing)
-                showSnackBarMessage(message = getString(R.string.update_list), viewContext = binding.root)
-
-            dataRemote = true
+            if (binding.swipe.isRefreshing)
+                showSnackBarMessage(message = getString(R.string.update_list))
         } else {
-            if (dataRemote && users.isNullOrEmpty()) {
+            if (users.isNullOrEmpty()) {
                 binding.apply {
                     txtInformation.visible()
                     txtInformation.setTextToUnderline(getString(R.string.locally_loaded_data))
                 }
-                dataRemote = false
             } else {
-                showSnackBarMessage(message = getString(R.string.could_not_update_list), viewContext = binding.root)
+                showSnackBarMessage(message = getString(R.string.could_not_update_list))
             }
         }
-
-        binding.swipe.isRefreshing = false
 
         users = list
         adapterUserList.users = users
@@ -156,5 +149,14 @@ class MainActivity : BaseActivity(), MainActivityView {
         viewModel.listUser.removeObserver(observerDataLoaded)
         viewModel.error.removeObserver(observerError)
         viewModel.showLoading.removeObserver(observerLoading)
+    }
+
+    override fun stopLoading() {
+        super.stopLoading()
+        binding.swipe.isRefreshing = false
+    }
+
+    private fun showSnackBarMessage(message: String) {
+        showSnackBarMessage(message = message, viewContext = binding.root)
     }
 }
