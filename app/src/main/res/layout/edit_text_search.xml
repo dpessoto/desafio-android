@@ -27,7 +27,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_search_24" />
+            app:srcCompat="@drawable/ic_baseline_search_24"
+            android:contentDescription="@string/search_contatcs" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editSearch"
@@ -45,7 +46,7 @@
             app:layout_constraintEnd_toStartOf="@+id/imgClear"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="MissingConstraints" />
+            tools:ignore="HardcodedText,MissingConstraints" />
 
         <ImageView
             android:id="@+id/imgClear"
@@ -58,7 +59,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_close_24" />
+            app:srcCompat="@drawable/ic_baseline_close_24"
+            android:contentDescription="@string/clear_the_search" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -69,12 +71,13 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:paddingLeft="8dp"
+        android:paddingStart="8dp"
         android:text="@string/cancel_edit"
         android:textColor="@color/colorPrimaryLight"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        tools:ignore="RtlSymmetry" />
 </androidx.constraintlayout.widget.ConstraintLayout>

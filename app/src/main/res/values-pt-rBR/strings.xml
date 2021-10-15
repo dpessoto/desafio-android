@@ -10,4 +10,6 @@
     <string name="try_again">Tente novamente</string>
     <string name="cancel_edit">cancelar</string>
     <string name="contact_not_found">Contato não encontrado :(</string>
+    <string name="clear_the_search">Limpa a busca.</string>
+    <string name="search_contatcs">Busca contatos</string>
 </resources>
