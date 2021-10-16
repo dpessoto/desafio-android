@@ -7,13 +7,20 @@ import com.picpay.desafio.android.model.User
 import com.picpay.desafio.android.model.UserDAO
 import com.picpay.desafio.android.model.UserDataBase
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 object MainMockListUser {
     val listUser =
-        listOf(User(1, "daniel", "dpessoto", "url"), User(2, "amanda", "asilva", "url"))
+        ArrayList<User>(
+            listOf(
+                User(1, "daniel", "dpessoto", "url"),
+                User(2, "amanda", "asilva", "url")
+            )
+        )
 }
 
+@ExperimentalCoroutinesApi
 object MainMockViewModel {
     val repository = mockk<MainRepository>()
     val dataLoadedObserver = mockk<Observer<Pair<List<User>, Boolean>>>(relaxed = true)
