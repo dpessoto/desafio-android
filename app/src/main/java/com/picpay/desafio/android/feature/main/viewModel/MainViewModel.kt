@@ -7,6 +7,7 @@ import com.picpay.desafio.android.feature.base.viewModel.BaseViewModel
 import com.picpay.desafio.android.feature.main.repository.MainRepository
 import com.picpay.desafio.android.model.ResultRepository
 import com.picpay.desafio.android.model.User
+import com.picpay.desafio.android.util.extension.toArrayList
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
@@ -39,11 +40,12 @@ class MainViewModel(private val repository: MainRepository) : BaseViewModel() {
         if ("" == contact) {
             _listSearchUser.value = notChangeList
         } else {
-            _listSearchUser.value = ArrayList(notChangeList.filter { item ->
+            val value = contact.lowercase(Locale.getDefault())
+            _listSearchUser.value = notChangeList.filter { item ->
                 val name = item.name.lowercase(Locale.getDefault())
                 val username = item.username.lowercase(Locale.getDefault())
-                name.contains(contact) || username.contains(contact)
-            })
+                name.contains(value) || username.contains(value)
+            }.toArrayList()
         }
     }
 
@@ -54,8 +56,10 @@ class MainViewModel(private val repository: MainRepository) : BaseViewModel() {
 
     private fun dataLoaded(result: Pair<ArrayList<User>, Boolean>) {
         _listUser.value = result
-        notChangeList = result.first
         _showLoading.value = false
+        if (notChangeList.isEmpty() || result.second)
+            notChangeList = result.first
+
     }
 
     private fun showLoading() {

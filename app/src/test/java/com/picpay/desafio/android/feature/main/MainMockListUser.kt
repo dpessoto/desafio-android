@@ -6,18 +6,16 @@ import com.picpay.desafio.android.feature.main.repository.MainRepository
 import com.picpay.desafio.android.model.User
 import com.picpay.desafio.android.model.UserDAO
 import com.picpay.desafio.android.model.UserDataBase
+import com.picpay.desafio.android.util.extension.toArrayList
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 
 object MainMockListUser {
-    val listUser =
-        ArrayList<User>(
-            listOf(
-                User(1, "daniel", "dpessoto", "url"),
-                User(2, "amanda", "asilva", "url")
-            )
-        )
+    val listUser = listOf(
+        User(1, "daniel", "dpessoto", "url"),
+        User(2, "amanda", "asilva", "url")
+    ).toArrayList()
 }
 
 @ExperimentalCoroutinesApi

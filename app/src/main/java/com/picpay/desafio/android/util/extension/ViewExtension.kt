@@ -19,12 +19,29 @@ fun View.invisible() {
 }
 
 fun View.setTransitionBackgroundDrawable(drawble: Int, durationMillis: Int) {
-    val transitionDrawable = ContextCompat.getDrawable(this.context, drawble) as TransitionDrawable
+    val transitionDrawable = ContextCompat.getDrawable(context, drawble) as TransitionDrawable
     this.background = transitionDrawable
     transitionDrawable.startTransition(durationMillis)
 }
 
-fun View.hideKeyboard(){
-    val inputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+fun View.hideKeyboard() {
+    val inputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(this.windowToken, 0)
+}
+
+fun View.showKeyboard() {
+    val inputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0)
+}
+
+fun View.setBackgroundDrawable(value: Int) {
+    val sdk = android.os.Build.VERSION.SDK_INT;
+    val drawable = ContextCompat.getDrawable(context, value)
+    if (sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+        setBackgroundDrawable(drawable);
+    } else {
+        background = drawable;
+    }
 }

@@ -108,6 +108,7 @@ class MainActivity : BaseActivity(), MainActivityView {
             editTextSearch.clearAndHideKeyboard(triggerTextChange = false)
             binding.txtNotFound.gone()
             progressBar.gone()
+            editTextSearch.clSearch.setBackgroundDrawable(R.drawable.backgroud_border_search_grey)
         }
 
         users = list
@@ -116,9 +117,21 @@ class MainActivity : BaseActivity(), MainActivityView {
 
     override fun stateSearchLoaded(list: ArrayList<User>) {
         adapterUserList.users = list
-        binding.recyclerView.scrollToPosition(0)
-        Handler().postDelayed({ binding.progressBar.gone() }, 500)
-        binding.txtNotFound.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        binding.apply {
+            recyclerView.scrollToPosition(0)
+            Handler().postDelayed({ progressBar.gone() }, 500)
+
+            if (list.isEmpty()) {
+                txtNotFound.visible()
+                editTextSearch.clSearch.setBackgroundDrawable(R.drawable.backgroud_border_search_red)
+            } else {
+                txtNotFound.gone()
+                if (editTextSearch.editSearch.text.toString().isNotEmpty())
+                    editTextSearch.clSearch.setBackgroundDrawable(R.drawable.backgroud_border_search_green)
+                else
+                    editTextSearch.clSearch.setBackgroundDrawable(R.drawable.backgroud_border_search_grey)
+            }
+        }
     }
 
     override fun setRecyclerView() {

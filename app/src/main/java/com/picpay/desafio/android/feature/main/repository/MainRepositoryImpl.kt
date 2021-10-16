@@ -6,6 +6,7 @@ import com.picpay.desafio.android.model.ResultRepository
 import com.picpay.desafio.android.model.User
 import com.picpay.desafio.android.model.UserDAO
 import com.picpay.desafio.android.model.UserDataBase
+import com.picpay.desafio.android.util.extension.toArrayList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -27,7 +28,7 @@ class MainRepositoryImpl(private val service: PicPayService, private val dataBas
                 emit(ResultRepository.Success(Pair(users, true)))
             } catch (e: Exception) {
                 try {
-                    val users = ArrayList(userDAO.getAllUsers())
+                    val users = userDAO.getAllUsers().toArrayList()
                     if (!users.isNullOrEmpty())
                         emit(ResultRepository.Success(Pair(users, false)))
                     else
