@@ -2,7 +2,6 @@ package com.picpay.desafio.android.feature.main.ui.view
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.picpay.desafio.android.R
@@ -26,7 +25,6 @@ class MainActivity : BaseActivity(), MainActivityView {
     private var users = ArrayList<User>()
 
     private val observerDataLoaded = Observer<Pair<ArrayList<User>, Boolean>> { dataLoaded ->
-        setVisibilitySwipeAndError(swipeVisibility = View.VISIBLE, errorVisibility = View.GONE)
         stateDataLoaded(dataLoaded.first, dataLoaded.second)
     }
 
@@ -35,7 +33,6 @@ class MainActivity : BaseActivity(), MainActivityView {
     }
 
     private val observerError = Observer<Exception> { error ->
-        setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.VISIBLE)
         stateError(error)
     }
 
@@ -57,7 +54,6 @@ class MainActivity : BaseActivity(), MainActivityView {
         super.onResume()
         if (users.isNullOrEmpty()) {
             viewModel.getUsers()
-            setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.GONE)
         }
     }
 
@@ -66,10 +62,15 @@ class MainActivity : BaseActivity(), MainActivityView {
         removeObservers()
     }
 
-    override fun setVisibilitySwipeAndError(swipeVisibility: Int, errorVisibility: Int) {
+    override fun setVisibilitySwipeAndError() {
         binding.apply {
-            swipe.visibility = swipeVisibility
-            clError.visibility = errorVisibility
+            if (users.isNullOrEmpty()) {
+                clError.visible()
+                swipe.gone()
+            } else {
+                clError.gone()
+                swipe.visible()
+            }
         }
     }
 
@@ -145,7 +146,7 @@ class MainActivity : BaseActivity(), MainActivityView {
         binding.apply {
             includeError.btnTryAgain.setOnClickListener {
                 viewModel.getUsers()
-                setVisibilitySwipeAndError(swipeVisibility = View.GONE, errorVisibility = View.GONE)
+                clError.gone()
                 includeError.btnTryAgain.gone()
                 includeError.progressBar.visible()
 
@@ -195,6 +196,7 @@ class MainActivity : BaseActivity(), MainActivityView {
     override fun stopLoading() {
         super.stopLoading()
         binding.swipe.isRefreshing = false
+        setVisibilitySwipeAndError()
     }
 
     private fun showSnackBarMessage(message: String) {

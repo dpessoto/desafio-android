@@ -6,10 +6,17 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
+import com.picpay.desafio.android.model.User
+import com.picpay.desafio.android.util.extension.toArrayList
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 
 object RecyclerViewMatchers {
+
+    val listUser = listOf(
+        User(1, "daniel", "dpessoto", "url"),
+        User(2, "amanda", "asilva", "url")
+    ).toArrayList()
 
     fun atPosition(
         position: Int,

@@ -3,7 +3,7 @@ package com.picpay.desafio.android.feature.main.ui.view
 import com.picpay.desafio.android.model.User
 
 interface MainActivityView {
-    fun setVisibilitySwipeAndError(swipeVisibility: Int, errorVisibility: Int)
+    fun setVisibilitySwipeAndError()
     fun stateError(e: Throwable)
     fun stateDataLoaded(list: ArrayList<User>, remote: Boolean)
     fun stateSearchLoaded(list: ArrayList<User>)

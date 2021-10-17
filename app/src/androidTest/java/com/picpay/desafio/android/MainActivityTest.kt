@@ -12,7 +12,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Test
-
+import com.picpay.desafio.android.feature.main.ui.view.MainActivity
 
 class MainActivityTest {
 
