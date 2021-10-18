@@ -2,7 +2,6 @@ package com.picpay.desafio.android.feature.base.ui.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -48,11 +47,11 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         binding.imageView.gone()
     }
 
-    override fun showSnackBarMessage(viewContext: View, message: String, postion: Int) {
+    override fun showSnackBarMessage(viewContext: View, message: String, position: Int) {
         val snack: Snackbar = Snackbar.make(viewContext, message, Snackbar.LENGTH_SHORT)
         val view = snack.view
         val params = view.layoutParams as FrameLayout.LayoutParams
-        params.gravity = Gravity.TOP
+        params.gravity = position
         view.layoutParams = params
         snack.show()
     }

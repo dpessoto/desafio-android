@@ -6,5 +6,5 @@ import android.view.View
 interface BaseActivityView {
     fun showLoading()
     fun stopLoading()
-    fun showSnackBarMessage(viewContext: View, message: String, postion: Int = Gravity.TOP)
+    fun showSnackBarMessage(viewContext: View, message: String, position: Int = Gravity.TOP)
 }
